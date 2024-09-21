@@ -11,3 +11,5 @@ interface UserDao {
     @Query("SELECT * FROM User WHERE id = :id")
     fun getUser(id: Int): Flow<User>  // Si usas corrutinas y Flow para consultas asíncronas
 }
+
+
