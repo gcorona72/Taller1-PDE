@@ -1,26 +1,17 @@
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.navigation.NavController
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController // Asegúrate de tener la clase creada
+import com.example.mitaller.User  // Esta es tu clase de entidad, no la de Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import androidx.compose.material3.*
-import androidx.compose.material.*
-import com.example.mitaller.database.AppDatabase
-import com.example.mitaller.database.User
-import com.google.firebase.firestore.auth.User
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -43,14 +34,6 @@ fun MainScreen(navController: NavController) {
             value = nameState.value,
             onValueChange = { newValue ->
                 nameState.value = newValue
-
-                // Guarda el nombre en la base de datos tan pronto se ingrese
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        val user = User(name = nameState.value)
-                        userDao.insertUser(user)  // Inserta el nombre en la base de datos
-                    }
-                }
             },
             label = { Text("Nombre") },
             modifier = Modifier.fillMaxWidth()
@@ -61,6 +44,14 @@ fun MainScreen(navController: NavController) {
         Button(
             onClick = {
                 if (nameState.value.isNotEmpty()) {
+                    // Guarda el nombre en la base de datos cuando el usuario hace clic en "Continuar"
+                    scope.launch {
+                        withContext(Dispatchers.IO) {
+                            val user = User(name = nameState.value)
+                            userDao.insertUser(user)  // Inserta el nombre en la base de datos
+                        }
+                    }
+
                     navController.navigate("settings")
                 } else {
                     // Mostrar mensaje o hacer algo si el nombre está vacío
