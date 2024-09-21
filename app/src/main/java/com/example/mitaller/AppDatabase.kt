@@ -1,9 +1,7 @@
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
-import com.example.mitaller.User
-import com.example.mitaller.UserDao
 
 
 @Database(entities = [User::class], version = 1)
