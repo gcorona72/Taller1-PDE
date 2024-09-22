@@ -1,33 +1,18 @@
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+package com.example.mitaller
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun MainScreen(navController: NavController) {
-    val context = LocalContext.current
-    val db = remember { AppDatabase.getDatabase(context) }  // Obtén la instancia de la base de datos
-    val userDao = remember { db.userDao() }
-    val nameState = remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
+    var name by remember { mutableStateOf("") }
+    var savedName by remember { mutableStateOf("") }
+    var isNameSaved by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -36,38 +21,28 @@ fun MainScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Ingrese su nombre:")
-
-        OutlinedTextField(
-            value = nameState.value,
-            onValueChange = { newValue ->
-                nameState.value = newValue
-            },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Ingresa tu nombre") }
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (nameState.value.isNotEmpty()) {
-                    // Guarda el nombre en la base de datos cuando el usuario hace clic en "Continuar"
-                    scope.launch {
-                        withContext(Dispatchers.IO) {
-                            val user = User(name = nameState.value)
-                            userDao.insertUser(user)  // Inserta el nombre en la base de datos
-                        }
-                    }
-
-                    navController.navigate("settings")
-                } else {
-                    // Mostrar mensaje o hacer algo si el nombre está vacío
-                    // Por ejemplo, puedes mostrar un Toast indicando que deben ingresar el nombre
-                }
+        Button(onClick = {
+            if (name.isNotEmpty()) {
+                savedName = name
+                isNameSaved = true
             }
+        }) {
+            Text(text = "Guardar nombre")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = if (isNameSaved) "Nombre guardado: $savedName" else "No se ha guardado el nombre")
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { if (isNameSaved) navController.navigate("settings") },
+            enabled = isNameSaved
         ) {
-            Text(text = "Continuar")
+            Text(text = "Ir a Configuración")
         }
     }
 }
