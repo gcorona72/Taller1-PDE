@@ -7,9 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mitaller.Almacenamiento.UserDatabase
 
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(navController: NavController, userDatabase: UserDatabase) {
     var name by remember { mutableStateOf("") }
     var savedName by remember { mutableStateOf("") }
     var isNameSaved by remember { mutableStateOf(false) }
@@ -29,6 +30,7 @@ fun MainScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
             if (name.isNotEmpty()) {
+                userDatabase.insertUser(name, "", "") // Inserta el nombre en la base de datos
                 savedName = name
                 isNameSaved = true
             }
